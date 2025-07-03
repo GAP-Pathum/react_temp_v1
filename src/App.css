@@ -1,0 +1,19 @@
+/* Add global theme classes */
+body.theme-light {
+  --bg-body: #F8F9FA;
+  --bg-card: #FFFFFF;
+  --text-primary: #212529;
+  --border-color: #DEE2E6;
+}
+
+body.theme-dark {
+  --bg-body: #212529;
+  --bg-card: #343A40;
+  --text-primary: #F8F9FA;
+  --border-color: #495057;
+}
+
+/* Add this to ensure smooth theme transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
