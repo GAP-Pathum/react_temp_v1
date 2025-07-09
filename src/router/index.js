@@ -1,11 +1,24 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Import actual page components
 import Home from '../pages/Home/Home';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Employee from '../pages/Employee/Employee';
 import Settings from '../pages/Settings/Settings';
+
+// Import auth components
+import { 
+    Login, 
+    Register, 
+    ForgotPassword, 
+    ResetPassword, 
+    ProtectedRoute, 
+    PublicRoute 
+} from '../pages/Auth';
+
+// Import auth context
+import { useAuth } from '../context/AuthContext';
 
 // Placeholder components for routes that don't have actual pages yet
 const UserList = () => React.createElement('h1', null, 'User List');
@@ -22,7 +35,7 @@ const Contact = () => React.createElement('h1', null, 'Contact');
 
 // Route configuration object
 export const routes = [
-    { path: '/', name: 'Home', nameKey: 'nav_home', component: Home, icon: 'bi-house-door' },
+    { path: '/home', name: 'Home', nameKey: 'nav_home', component: Home, icon: 'bi-house-door' },
     { path: '/dashboard', name: 'Dashboard', nameKey: 'nav_dashboard', component: Dashboard, icon: 'bi-speedometer2', badge: { text: 'NEW', variant: 'info' } },
     {
         name: 'User Management', 
@@ -60,25 +73,64 @@ export const routes = [
     { path: '/contact', name: 'Contact', nameKey: 'nav_contact', component: Contact, icon: 'bi-envelope' }
 ];
 
+// Default redirect component
+const DefaultRedirect = () => {
+    const { isAuthenticated } = useAuth();
+    return React.createElement(Navigate, {
+        to: isAuthenticated ? '/home' : '/auth/login',
+        replace: true
+    });
+};
+
 // Routes component
 const AppRoutes = () => {
     return React.createElement(
         Routes,
         null,
-        routes.flatMap(route =>
+        // Default route
+        React.createElement(Route, {
+            key: 'default',
+            path: '/',
+            element: React.createElement(DefaultRedirect)
+        }),
+        
+        // Authentication routes (public)
+        React.createElement(Route, {
+            key: 'auth-login',
+            path: '/auth/login',
+            element: React.createElement(PublicRoute, null, React.createElement(Login))
+        }),
+        React.createElement(Route, {
+            key: 'auth-register',
+            path: '/auth/register',
+            element: React.createElement(PublicRoute, null, React.createElement(Register))
+        }),
+        React.createElement(Route, {
+            key: 'auth-forgot-password',
+            path: '/auth/forgot-password',
+            element: React.createElement(PublicRoute, null, React.createElement(ForgotPassword))
+        }),
+        React.createElement(Route, {
+            key: 'auth-reset-password',
+            path: '/auth/reset-password',
+            element: React.createElement(PublicRoute, null, React.createElement(ResetPassword))
+        }),
+        
+        // Protected routes
+        ...routes.flatMap(route =>
             route.children
                 ? route.children.map(child =>
                     React.createElement(Route, {
                         key: child.path,
                         path: child.path,
-                        element: React.createElement(child.component)
+                        element: React.createElement(ProtectedRoute, null, React.createElement(child.component))
                     })
                 )
                 : route.path
                     ? [React.createElement(Route, {
                         key: route.path,
                         path: route.path,
-                        element: React.createElement(route.component)
+                        element: React.createElement(ProtectedRoute, null, React.createElement(route.component))
                     })]
                     : []
         )

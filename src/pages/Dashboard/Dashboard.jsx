@@ -13,7 +13,7 @@ const Dashboard = () => {
   const { t } = useTranslation();
 
   return (
-    <div>
+    <div className="p-3">
       <h1 className="mb-4">{t('dashboard_overview')}</h1>
       
       {/* Stats Cards */}

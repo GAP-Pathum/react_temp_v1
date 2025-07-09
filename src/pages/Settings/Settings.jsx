@@ -13,7 +13,6 @@ const Settings = () => {
   // Apply theme to component styles
   const styles = {
     container: {
-      backgroundColor: getThemeValue(theme, 'bgCard'),
       color: getThemeValue(theme, 'textPrimary'),
     },
     card: {
